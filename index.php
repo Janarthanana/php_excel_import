@@ -17,26 +17,54 @@ if (isset($_POST["import"]))
         $Reader = new SpreadsheetReader($targetPath);
         
         $sheetCount = count($Reader->sheets());
+         ini_set('max_execution_time', 1800);
+         set_time_limit(1800);
+        $starttime = microtime(true);
         for($i=0;$i<$sheetCount;$i++)
         {
-            
+           
             $Reader->ChangeSheet($i);
             
             foreach ($Reader as $Row)
             {
           
-                $name = "";
+                $countryid = "";
                 if(isset($Row[0])) {
-                    $name = mysqli_real_escape_string($conn,$Row[0]);
+                    $countryid = mysqli_real_escape_string($conn,$Row[0]);
                 }
                 
-                $description = "";
+                $state_id = "";
                 if(isset($Row[1])) {
-                    $description = mysqli_real_escape_string($conn,$Row[1]);
+                    $state_id = mysqli_real_escape_string($conn,$Row[1]);
+                }
+
+                $city_name = "";
+                if(isset($Row[2])) {
+                    $city_name = mysqli_real_escape_string($conn,$Row[2]);
+                }
+
+                $city_latitude = "";
+                if(isset($Row[3])) {
+                    $city_latitude = mysqli_real_escape_string($conn,$Row[3]);
+                }
+
+                $city_longitude = "";
+                if(isset($Row[4])) {
+                    $city_longitude = mysqli_real_escape_string($conn,$Row[4]);
+                }
+
+                $active = "";
+                if(isset($Row[5])) {
+                    $active = mysqli_real_escape_string($conn,$Row[5]);
                 }
                 
-                if (!empty($name) || !empty($description)) {
-                    $query = "insert into tbl_info(name,description) values('".$name."','".$description."')";
+                $city_timezone = "";
+                if(isset($Row[6])) {
+                    $city_timezone = mysqli_real_escape_string($conn,$Row[6]);
+                }
+
+                if (!empty($countryid) || !empty($state_id) || !empty($city_name) || !empty($city_latitude) || !empty($city_longitude) || !empty($active) || !empty($city_timezone)) {
+                    $query = "insert into trc_city(country_id,state_id,city_name,city_latitude,city_longitude,active,city_timezone) values('".$countryid."','".$state_id."','".$city_name."','".$city_latitude."','".$city_longitude."','".$active."','".$city_timezone."')";
                     $result = mysqli_query($conn, $query);
                 
                     if (! empty($result)) {
@@ -48,7 +76,9 @@ if (isset($_POST["import"]))
                     }
                 }
              }
-        
+        $endtime = microtime(true);
+        $alltime = $endtime - $starttime;
+        echo ' ######### '.$alltime;
          }
   }
   else
@@ -150,7 +180,7 @@ div#response.display-block {
     <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
     
          
-<?php
+<!-- <?php
     $sqlSelect = "SELECT * FROM tbl_info";
     $result = mysqli_query($conn, $sqlSelect);
 
@@ -181,7 +211,7 @@ if (mysqli_num_rows($result) > 0)
     </table>
 <?php 
 } 
-?>
+?> -->
 
 </body>
 </html>
